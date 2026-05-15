@@ -1,0 +1,38 @@
+name: VTOP Academic Calendar Scraper
+
+on:
+  schedule:
+    - cron: '30 6 * * *' # Runs daily at 12:00PM IST (6:30 AM UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape-calendar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Scraper
+        env:
+          VTOP_REGNO: ${{ secrets.VTOP_REGNO }}
+          VTOP_PASSWORD: ${{ secrets.VTOP_PASSWORD }}
+        run: node scraper.js
+
+      - name: Commit and Push Calendar Data
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add calendars/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: Auto-update Faculty IDs" && git push)
