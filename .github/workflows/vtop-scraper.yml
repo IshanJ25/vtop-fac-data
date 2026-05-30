@@ -24,15 +24,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Chrome
-        run: |
-          rm -rf /home/runner/.cache/puppeteer
-          npx puppeteer browsers install chrome
-
       - name: Run Scraper
         env:
           VTOP_REGNO: ${{ secrets.VTOP_REGNO }}
           VTOP_PASSWORD: ${{ secrets.VTOP_PASSWORD }}
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome-stable
         run: node scraper.js
 
       - name: Commit and Push ID Data
