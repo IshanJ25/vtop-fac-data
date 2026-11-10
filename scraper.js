@@ -434,6 +434,11 @@ async function runScraper() {
       return [...seen.values()];
     });
 
+    // Deterministic order (name, then emp_id) keeps git diffs minimal
+    facultyData.sort((a, b) =>
+      (a.name < b.name ? -1 : a.name > b.name ? 1 : 0) ||
+      a.emp_id.localeCompare(b.emp_id, "en", { numeric: true }));
+
     log.ok(`Extracted ${facultyData.length} unique faculty records.`);
 
     const outPath = path.join(__dirname, "data", "vellore.json");
